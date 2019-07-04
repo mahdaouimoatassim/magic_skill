@@ -9,6 +9,7 @@ import wikipedia
 from os import listdir
 from os.path import isfile, join
 from SQLAlchemyAPI import *
+from datetime import date
 import sys
 
 
@@ -252,6 +253,13 @@ def insererCompetence(session,content,listeMission,file,dossier):
         entreprise = mission['ID']['Entreprise']
         role=mission['ID']['Role']
         listeCompetence=mission['Competences']
+        date_debut_fin = recuperer_date_debut_fin_mission(mission['ID']['Date'])
+        if len(date_debut_fin) == 2:
+            date_debut = date_debut_fin[0]
+            date_fin = date_debut_fin[1]
+        elif len(date_debut_fin) == 1:
+            date_debut = date_debut_fin[0]
+            date_fin = date(9999, 12, 30)
         if rechercherEntreprise(session, entreprise) != 'none':
             Entreprise_id=rechercherEntreprise(session, entreprise) #recuperer l'ide de l'ntreprise si elle existe
         else:
@@ -266,8 +274,8 @@ def insererCompetence(session,content,listeMission,file,dossier):
 
         session.add_all([
             Missions(mission_id=Mission_id, entreprise_id=Entreprise_id, description_mission='',
-                     date_debut='2019-05-02',
-                     date_fin='2019-05-02',duree=duree_mission)
+                     date_debut=date_debut,
+                     date_fin=date_fin,duree=duree_mission)
         ])
         for competence in mission['Competences']:
             if rechercherCompetence(session, competence.lower()) != 'none':
@@ -345,3 +353,39 @@ def chercher_secteur_activite_entreprise(entreprise):
         dictionnaire['secteur']='nom entreprise non reconnu pour wikipedia'
         dictionnaire['definition']=''
         return dictionnaire
+
+
+# -----------------------------------------------------------------------------------------------------------
+# -------------------------------Retourner la date de début et du fin de la mission--------------------------
+
+def recuperer_date_debut_fin_mission(texte):
+    it=datefinder.find_dates(texte)
+    cpt=0
+    tabelau_date=[]
+    resultat_table=[]
+    for element in it:
+        tabelau_date.append(element)
+        print(cpt)
+        cpt=cpt+1
+    if cpt == 0:
+        texte=texte.split("-")
+        date_debut = date(int(texte[0]), 1, 1) if texte[0] < texte[1] else date(int(texte[1]), 1, 1)
+        date_fin = date(int(texte[1]), 1, 1) if texte[0] < texte[1] else date(int(texte[0]), 1, 1)
+        resultat_table.append(date_debut)
+        resultat_table.append(date_fin)
+    elif cpt == 1:
+        date_debut=tabelau_date[0]
+        resultat_table.append(date_debut)
+    elif cpt == 2:
+        date_debut=tabelau_date[0]
+        date_fin=tabelau_date[1]
+#        date_debut = date1 if date2-date1 > 0 else date2
+#        date_fin = date2 if date2-date1 > 0 else date1
+        resultat_table.append(date_debut)
+        resultat_table.append(date_fin)
+    else:
+        date_debut=tabelau_date[0]
+        date_fin=tabelau_date[0]
+        resultat_table.append(date_debut)
+        resultat_table.append(date_fin)
+    return resultat_table
