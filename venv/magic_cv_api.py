@@ -12,7 +12,7 @@ from SQLAlchemyAPI import *
 from datetime import date
 import sys
 
-
+folder = "C:/Users/e.mahdaoui/Desktop/Projet Magic Skills"
 seniorite_seuil= 60
 secteur_activite=["bancaire","télécommunication", "banque", "assurance" ,"grande distribution", "transport","informatique", "technologie", "pharmacie","pétroliers"]
 
@@ -60,7 +60,6 @@ def recuperer_date_texte(texte):
         .replace('mai', 'may').replace('juin', 'june').replace('juillet', 'july').replace('aout', 'august').replace('septembre','september')\
     .replace('octobre', 'october').replace('novembre', 'november').replace('decembre', 'december')
     date = datefinder.find_dates(texte)
-    print(1)
     return next(date)
 
 #-----------------------------------------------------------------------------------------------
@@ -229,7 +228,7 @@ def extraire_information_collaborateur(texte_collaborateur,lien_cv,dossier):
     collaborateur.mobilite=-1
     collaborateur.region_mobilite='non renseigne'
     collaborateur.lien=dossier+'/'+lien_cv
-    collaborateur.date_maj=date_derniere_modification_fichier("C:/Users/e.mahdaoui/Desktop/Stage Fin d'Etude/Application MagicSkills/Code Python"+'/'+lien_cv)
+    collaborateur.date_maj=date_derniere_modification_fichier(folder+'/'+lien_cv)
 #    str(sys.argv[1])
 
     for line in texte_collaborateur:
@@ -300,7 +299,7 @@ def insererCompetence(session,content,listeMission,file,dossier):
 def traitement_cv(lien_cv,dossier,session):
 
 #    str(sys.argv[1])
-    content = convertWordToText("C:/Users/e.mahdaoui/Desktop/Stage Fin d'Etude/Application MagicSkills/Code Python"+'/'+lien_cv)
+    content = convertWordToText(folder+'/'+lien_cv)
     missions_detail = cvMissionDetail(content, cvMission(content))
     listecompetence = cvCompetenceMission(cvListeCompetence(missions_detail[0].get('detail')), missions_detail)
     insererCompetence(session, content, listecompetence,lien_cv,dossier)
@@ -365,7 +364,6 @@ def recuperer_date_debut_fin_mission(texte):
     resultat_table=[]
     for element in it:
         tabelau_date.append(element)
-        print(cpt)
         cpt=cpt+1
     if cpt == 0:
         texte=texte.split("-")

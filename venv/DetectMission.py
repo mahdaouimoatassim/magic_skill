@@ -1,3 +1,6 @@
+
+#!pip install SQLAlchemyAPI
+
 from SQLAlchemyAPI import *
 from magic_cv_api import *
 import wikipedia
@@ -24,8 +27,10 @@ vider_base_donnees(session)
 #print(sys.argv[1])
 
 
+#folder = "C:/Users/e.mahdaoui/Desktop/Projet Magic Skills"
 ##extraction_competence_process(sys.argv[1])
-extraction_competence_process("C:/Users/e.mahdaoui/Desktop/Stage Fin d'Etude/Application MagicSkills/Code Python")
+extraction_competence_process(folder)
+
 
 #print(wikipedia.search("google"))
 #wikipedia.set_lang("fr")

@@ -8,10 +8,18 @@ from sqlalchemy import or_
 import hashlib
 
 
+utilisateur="postgres"
+mot_de_passe="Data"
+serveur="localhost"
+port=5432
+base_de_donnees="magic_skill"
+lien_connexion="postgresql://"+utilisateur+":"+mot_de_passe+"@"+serveur+":"+str(port)+"/"+base_de_donnees
+
+print (lien_connexion)
 #-------------------------------------- Declaration des tables  ---------------------------------------------------------
 #postgresql://postgres:postgresql123@localhost:5433/magic_skill
 Base = declarative_base()
-engine = create_engine('postgresql://postgres:postgresql123@localhost:5433/magic_skill')
+engine = create_engine(lien_connexion)
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 conn = engine.connect()
