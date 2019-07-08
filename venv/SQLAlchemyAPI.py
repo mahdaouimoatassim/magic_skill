@@ -9,9 +9,9 @@ import hashlib
 
 
 utilisateur="postgres"
-mot_de_passe="Data"
+mot_de_passe="postgresql123"
 serveur="localhost"
-port=5432
+port=5433
 base_de_donnees="magic_skill"
 lien_connexion="postgresql://"+utilisateur+":"+mot_de_passe+"@"+serveur+":"+str(port)+"/"+base_de_donnees
 

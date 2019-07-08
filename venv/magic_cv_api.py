@@ -12,7 +12,7 @@ from SQLAlchemyAPI import *
 from datetime import date
 import sys
 
-folder = "C:/Users/e.mahdaoui/Desktop/Projet Magic Skills"
+folder = "C:/Users/e.mahdaoui/Desktop/Stage Fin d'Etude/Application MagicSkills/CV"
 seniorite_seuil= 60
 secteur_activite=["bancaire","télécommunication", "banque", "assurance" ,"grande distribution", "transport","informatique", "technologie", "pharmacie","pétroliers"]
 
@@ -40,27 +40,39 @@ def date_derniere_modification_fichier(lien):
 #--------Convertir le texte de la durée en nombre de mois--------------------------------------
 
 def dureeMission(time):
+    time=time.replace(',','.')
     t = time.split(' ')
     an = 0
     mois = 0
     count = 0
-    for word in t:
-        if ("an" in word.lower()):
-            an = t[count-1]
-        if ("mois" in word.lower()):
-            mois = t[count-1]
-        count = count + 1
-    return (int(an)*12 + int(mois))
+    try:
+        for word in t:
+            if ("an" in word.lower()):
+                an = t[count-1]
+            if ("mois" in word.lower()):
+                mois = t[count-1]
+            count = count + 1
+        resultat =(float(an)*12 + float(mois))
+    except ValueError:
+        return -1
+    except:
+        return -1
+    return resultat
 
 #-----------------------------------------------------------------------------------------------
 #---------Récuperer une date a partir d'une chaine de caracteres--------------------------------
 
 def recuperer_date_texte(texte):
-    texte = texte.lower().replace('janvier','january').replace('février','february').replace('mars','march').replace('avril','april')\
-        .replace('mai', 'may').replace('juin', 'june').replace('juillet', 'july').replace('aout', 'august').replace('septembre','september')\
-    .replace('octobre', 'october').replace('novembre', 'november').replace('decembre', 'december')
-    date = datefinder.find_dates(texte)
-    return next(date)
+    try:
+        texte = texte.lower().replace('janvier','january').replace('février','february').replace('mars','march').replace('avril','april')\
+            .replace('mai', 'may').replace('juin', 'june').replace('juillet', 'july').replace('aout', 'august').replace('septembre','september')\
+        .replace('octobre', 'october').replace('novembre', 'november').replace('decembre', 'december')
+        date = datefinder.find_dates(texte)
+        date = next(date)
+    except:
+        return "9999-12-31"
+    return date
+
 
 #-----------------------------------------------------------------------------------------------
 #---------Spliter une chaine de caractere par rapport à plusieurs séparateurs-------------------
@@ -87,11 +99,13 @@ def cvMission(content):
     ListMission=[]
     Mission={}
     cpt=0
+    numero_mission=0
     for line in content:
         if (time_b == 1):
             x = re.search(".*([1-3][0-9]{3})", line)
             if (x is not None):
                 cpt=cpt+1
+                print("mission "+ str(cpt))
                 if (cpt!=1):
                     Mission['Index_fin']= count-4
                     ListMission.append(Mission)
@@ -105,6 +119,7 @@ def cvMission(content):
                     Mission['Ville']=content[count-2]
                     Mission['Date']=line
                     Mission['Role'] = content[count+1]
+                    print(time)
                     Mission['Duree']=dureeMission(time)
                     debut_paragraphe = count-3
                 else:
@@ -121,10 +136,11 @@ def cvMission(content):
                     Mission['Ville']=city
                     Mission['Date']=date
                     Mission['Role'] = content[count + 1]
+                    print(time)
                     Mission['Duree']=dureeMission(time)
 
             time_b = 0
-        if (" an" in line.lower()) or (" mois" in line.lower()):
+        if (" an" in line.lower()) or (" mois" in line.lower()) or (" ans" in line.lower()):
             time_b = 1
             time = line
         count = count + 1
@@ -214,8 +230,8 @@ def extraire_information_collaborateur(texte_collaborateur,lien_cv,dossier):
     collaborateur=Collaborateurs()
     collaborateur.agence_id=1
     nom_prenom=texte_collaborateur[1].split(' ')
-    collaborateur.prenon=str(nom_prenom[0]).lower()
-    collaborateur.nom = str(nom_prenom[1]).lower()
+    collaborateur.prenon=str(nom_prenom[0]).lower().capitalize()
+    collaborateur.nom = str(nom_prenom[1]).lower().capitalize()
     if rechercherCollaborateur(session,collaborateur.nom,collaborateur.prenon) != 'none':
         collaborateur.collaborateur_id=rechercherCollaborateur(session, collaborateur.nom, collaborateur.prenon)
     else:
@@ -263,9 +279,10 @@ def insererCompetence(session,content,listeMission,file,dossier):
             Entreprise_id=rechercherEntreprise(session, entreprise) #recuperer l'ide de l'ntreprise si elle existe
         else:
             Entreprise_id = rechercherMaxEntrepriseId(session)+1
-            ent_dict_sect=chercher_secteur_activite_entreprise(entreprise)
+            ent_dict_sect=""
+                #chercher_secteur_activite_entreprise(entreprise) 'secteur' ['definition']
             session.add_all([
-                Entreprises(entreprise_id=Entreprise_id, nom=entreprise, secteur_activite=ent_dict_sect['secteur'], region='',description=ent_dict_sect['definition'])
+                Entreprises(entreprise_id=Entreprise_id, nom=entreprise, secteur_activite=ent_dict_sect, region='',description=ent_dict_sect)
             ])
             session.commit()        #inserer l'entreprise si elle existe pas
 
@@ -317,7 +334,11 @@ def lister_fichier_word(lien):
 #-------------------------------Lancer l'extraction des competences pour chaque CV----------------------------
 
 def extraction_competence_process(dossier):
+    cpt=0
     for fichier in lister_fichier_word(dossier):
+        cpt=cpt+1
+        print("----------------------------------"+str(cpt)+"--------------------------------------")
+        print(fichier)
         traitement_cv(fichier, dossier,  session)
     return True
 
@@ -366,7 +387,10 @@ def recuperer_date_debut_fin_mission(texte):
         tabelau_date.append(element)
         cpt=cpt+1
     if cpt == 0:
-        texte=texte.split("-")
+        if ("-" in texte):
+            texte=texte.split("-")
+        elif ("/" in texte):
+            texte = texte.split("/")
         date_debut = date(int(texte[0]), 1, 1) if texte[0] < texte[1] else date(int(texte[1]), 1, 1)
         date_fin = date(int(texte[1]), 1, 1) if texte[0] < texte[1] else date(int(texte[0]), 1, 1)
         resultat_table.append(date_debut)
