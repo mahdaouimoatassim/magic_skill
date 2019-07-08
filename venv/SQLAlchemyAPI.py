@@ -6,7 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import relationship
 from sqlalchemy import or_
 import hashlib
-
+import datetime
+from dateutil import relativedelta
+import numpy as np
 
 utilisateur="postgres"
 mot_de_passe="Data"
@@ -162,6 +164,41 @@ def rechercherMaxCollaborateurId(session):
         return u.collaborateur_id
     else:
         return 0
+
+today_date = datetime.date.today()
+min_date = session.query(Missions.date_debut).order_by(Missions.date_debut).first().date_debut
+delta = relativedelta.relativedelta(today_date, min_date)
+num_months = delta.years*12 + delta.months
+max_linear = num_months**2/2
+max_expo = np.exp(num_months)
+max_racine = 1/2*np.sqrt(num_months)
+
+def calculerScore(session):
+    u = session.query(Missions, Experiences).filter(Missions.mission_id == Experiences.mission_id)
+    if u is not None:
+        for row in u:
+            row[1].score = integraleLineaire(row[0].date_debut, row[0].duree)
+        session.commit()
+    else:
+        print("Nothing to print")
+
+def integraleLineaire(date_debut, duree):
+    min_delta = relativedelta.relativedelta(date_debut, min_date)
+    min_months = min_delta.years*12 + min_delta.months
+    max_months = min_months + duree
+    return (((max_months**2/2) - (min_months**2/2))/max_linear)*10
+
+def integraleExponentielle(date_debut, duree):
+    min_delta = relativedelta.relativedelta(date_debut, min_date)
+    min_months = min_delta.years*12 + min_delta.months
+    max_months = min_months + duree
+    return ((np.exp(max_months) - np.exp(min_months))/max_expo)*10
+
+def integraleRacineCarre(date_debut, duree):
+    min_delta = relativedelta.relativedelta(date_debut, min_date)
+    min_months = min_delta.years*12 + min_delta.months
+    max_months = min_months + duree
+    return ((1/2*(np.sqrt(max_months) - np.sqrt(min_months)))/max_racine)*10
 
 #----------------------------------------------------------------------------------------------------------------
 #-------------------------------- Fonction qui permet de vider la base de données--------------------------------

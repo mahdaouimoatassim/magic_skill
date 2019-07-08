@@ -23,15 +23,15 @@ from os import listdir
 #Dossier_cv='C:/Users/e.mahdaoui/Desktop/Stage Fin d\'Etude/Application MagicSkills/Code Python'
 
 #sys.argv[1]='C:/Users/e.mahdaoui/Desktop/Stage Fin d\'Etude/Application MagicSkills/Code Python'
-vider_base_donnees(session)
+#vider_base_donnees(session)
 #print(sys.argv[1])
 
 
 #folder = "C:/Users/e.mahdaoui/Desktop/Projet Magic Skills"
 ##extraction_competence_process(sys.argv[1])
-extraction_competence_process(folder)
+#extraction_competence_process(folder)
 
-
+#calculerScore(session)
 #print(wikipedia.search("google"))
 #wikipedia.set_lang("fr")
 

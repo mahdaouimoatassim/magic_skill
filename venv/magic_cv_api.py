@@ -12,7 +12,7 @@ from SQLAlchemyAPI import *
 from datetime import date
 import sys
 
-folder = "C:/Users/e.mahdaoui/Desktop/Projet Magic Skills"
+folder = "C:/Users/n.devignes.NEOSOFT/Desktop/Magic Skill"
 seniorite_seuil= 60
 secteur_activite=["bancaire","télécommunication", "banque", "assurance" ,"grande distribution", "transport","informatique", "technologie", "pharmacie","pétroliers"]
 
