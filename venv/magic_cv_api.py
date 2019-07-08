@@ -12,7 +12,7 @@ from SQLAlchemyAPI import *
 from datetime import date
 import sys
 
-folder = "C:/Users/e.mahdaoui/Desktop/Stage Fin d'Etude/Application MagicSkills/CV"
+folder = "C:/Users/e.mahdaoui/Desktop/Projet Magic Skills/CV"
 seniorite_seuil= 60
 secteur_activite=["bancaire","télécommunication", "banque", "assurance" ,"grande distribution", "transport","informatique", "technologie", "pharmacie","pétroliers"]
 
@@ -105,7 +105,6 @@ def cvMission(content):
             x = re.search(".*([1-3][0-9]{3})", line)
             if (x is not None):
                 cpt=cpt+1
-                print("mission "+ str(cpt))
                 if (cpt!=1):
                     Mission['Index_fin']= count-4
                     ListMission.append(Mission)
@@ -119,7 +118,6 @@ def cvMission(content):
                     Mission['Ville']=content[count-2]
                     Mission['Date']=line
                     Mission['Role'] = content[count+1]
-                    print(time)
                     Mission['Duree']=dureeMission(time)
                     debut_paragraphe = count-3
                 else:
@@ -136,7 +134,6 @@ def cvMission(content):
                     Mission['Ville']=city
                     Mission['Date']=date
                     Mission['Role'] = content[count + 1]
-                    print(time)
                     Mission['Duree']=dureeMission(time)
 
             time_b = 0
@@ -337,8 +334,6 @@ def extraction_competence_process(dossier):
     cpt=0
     for fichier in lister_fichier_word(dossier):
         cpt=cpt+1
-        print("----------------------------------"+str(cpt)+"--------------------------------------")
-        print(fichier)
         traitement_cv(fichier, dossier,  session)
     return True
 
