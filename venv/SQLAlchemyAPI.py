@@ -177,8 +177,11 @@ def calculerScore(session):
     u = session.query(Missions, Experiences).filter(Missions.mission_id == Experiences.mission_id)
     if u is not None:
         for row in u:
-            row[1].score = integraleLineaire(row[0].date_debut, row[0].duree)
-        session.commit()
+            scr = integraleLineaire(row[0].date_debut, row[0].duree)
+            x = session.query(Experiences).filter(Experiences.mission_id == row[1].mission_id).filter(
+                Experiences.collaborateur_id == row[1].collaborateur_id).filter(
+                Experiences.competence_id == row[1].competence_id).update({Experiences.score: scr})
+            session.commit()
     else:
         print("Nothing to print")
 

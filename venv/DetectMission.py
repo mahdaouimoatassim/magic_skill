@@ -21,17 +21,17 @@ start_time = time.time()
 from os import listdir
 #print(listdir("C:/Users/e.mahdaoui/Desktop/Stage Fin d'Etude/Application MagicSkills/Code Python"))
 #Dossier_cv='C:/Users/e.mahdaoui/Desktop/Stage Fin d\'Etude/Application MagicSkills/Code Python'
-
 #sys.argv[1]='C:/Users/e.mahdaoui/Desktop/Stage Fin d\'Etude/Application MagicSkills/Code Python'
-#vider_base_donnees(session)
+
 #print(sys.argv[1])
 
 
 #folder = "C:/Users/e.mahdaoui/Desktop/Projet Magic Skills"
 ##extraction_competence_process(sys.argv[1])
-#extraction_competence_process(folder)
+vider_base_donnees(session)
+extraction_competence_process(folder)
+calculerScore(session)
 
-#calculerScore(session)
 #print(wikipedia.search("google"))
 #wikipedia.set_lang("fr")
 
