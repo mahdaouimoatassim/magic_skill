@@ -12,7 +12,7 @@ from SQLAlchemyAPI import *
 from datetime import date
 import sys
 
-folder = "C:/Users/n.devignes.NEOSOFT/Desktop/Magic Skill"
+folder = "C:/Users/e.mahdaoui/Desktop/Stage Fin d'Etude/Application MagicSkills/CV"
 seniorite_seuil= 60
 secteur_activite=["bancaire","télécommunication", "banque", "assurance" ,"grande distribution", "transport","informatique", "technologie", "pharmacie","pétroliers"]
 
@@ -189,13 +189,17 @@ def cvListeCompetence(Texte):
     ListeCompetence=[]
     for line in listetexte:
         if (',' in line) or ("/" in line) or ("(" in line) or (")" in line)or (":" in line):
+            if (":" in line):
+                line=line.split(":")[1]
             listeMot=my_split(line, [",", "/", " et ", "(", ")",":"])
             for mot in listeMot:
-                if(mot != ''):
+                if(len(mot) >= 1):
                     if mot[len(mot)-1] == ".":
                         ListeCompetence.append(mot.strip()[:len(mot.strip())-1])
                     else:
                         ListeCompetence.append(mot.strip())
+    print("--------------------------------------------------------------------------------------")
+    print(ListeCompetence)
     return ListeCompetence
 
 #-----------------------------------------------------------------------------------------------
@@ -291,12 +295,12 @@ def insererCompetence(session,content,listeMission,file,dossier):
                      date_fin=date_fin,duree=duree_mission)
         ])
         for competence in mission['Competences']:
-            if rechercherCompetence(session, competence.lower()) != 'none':
-                Competence_id=rechercherCompetence(session, competence.lower())
+            if rechercherCompetence(session, competence.upper()) != 'none':
+                Competence_id=rechercherCompetence(session, competence.upper())
             else:
                 Competence_id = rechercherMaxCompetenceId(session)+1
                 session.add_all([
-                    Competences(competence_id=Competence_id, nom=competence.lower(), categorie='non renseigne')
+                    Competences(competence_id=Competence_id, nom=competence.upper(), categorie='non renseigne')
                 ])
                 session.commit()
             session.add_all([
@@ -314,6 +318,7 @@ def traitement_cv(lien_cv,dossier,session):
 
 #    str(sys.argv[1])
     content = convertWordToText(folder+'/'+lien_cv)
+    #print(content)
     missions_detail = cvMissionDetail(content, cvMission(content))
     listecompetence = cvCompetenceMission(cvListeCompetence(missions_detail[0].get('detail')), missions_detail)
     insererCompetence(session, content, listecompetence,lien_cv,dossier)
@@ -324,7 +329,7 @@ def traitement_cv(lien_cv,dossier,session):
 
 def lister_fichier_word(lien):
     for file in listdir(lien):
-        if (".docx" in file) and ("~$" not in file):
+        if (".docx" in file.lower()) and ("~$" not in file):
             yield file
 
 #-----------------------------------------------------------------------------------------------------------
@@ -333,7 +338,7 @@ def lister_fichier_word(lien):
 def extraction_competence_process(dossier):
     cpt=0
     for fichier in lister_fichier_word(dossier):
-        cpt=cpt+1
+        print(fichier)
         traitement_cv(fichier, dossier,  session)
     return True
 
@@ -386,8 +391,8 @@ def recuperer_date_debut_fin_mission(texte):
             texte=texte.split("-")
         elif ("/" in texte):
             texte = texte.split("/")
-        date_debut = date(int(texte[0]), 1, 1) if texte[0] < texte[1] else date(int(texte[1]), 1, 1)
-        date_fin = date(int(texte[1]), 1, 1) if texte[0] < texte[1] else date(int(texte[0]), 1, 1)
+        date_debut = date(int(texte[0]), 1, 1) if int(texte[0]) < int(texte[1]) else date(int(texte[1]), 1, 1)
+        date_fin = date(int(texte[1]), 1, 1) if int(texte[0]) < int(texte[1]) else date(int(texte[0]), 1, 1)
         resultat_table.append(date_debut)
         resultat_table.append(date_fin)
     elif cpt == 1:

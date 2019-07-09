@@ -11,9 +11,9 @@ from dateutil import relativedelta
 import numpy as np
 
 utilisateur="postgres"
-mot_de_passe="Data"
+mot_de_passe="postgresql123"
 serveur="localhost"
-port=5432
+port=5433
 base_de_donnees="magic_skill"
 lien_connexion="postgresql://"+utilisateur+":"+mot_de_passe+"@"+serveur+":"+str(port)+"/"+base_de_donnees
 
@@ -120,10 +120,9 @@ def rechercherEntreprise(session,nom_entreprise):
     else:
         return 'none'
 
-
 # Rechercher l'identifiant de la competence en se basant sur le nom de la competence
 def rechercherCompetence(session,nom_competence):
-    u = session.query(Competences.competence_id).filter(  Competences.nom.like(nom_competence) ).first()
+    u = session.query(Competences.competence_id).filter(  Competences.nom.like(nom_competence)).first()
     if u is not None:
         return u.competence_id
     else:
@@ -166,6 +165,7 @@ def rechercherMaxCollaborateurId(session):
         return 0
 
 today_date = datetime.date.today()
+
 min_date = session.query(Missions.date_debut).order_by(Missions.date_debut).first().date_debut
 delta = relativedelta.relativedelta(today_date, min_date)
 num_months = delta.years*12 + delta.months
