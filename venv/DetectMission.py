@@ -30,7 +30,7 @@ from os import listdir
 ##extraction_competence_process(sys.argv[1])
 vider_base_donnees(session)
 extraction_competence_process(folder)
-
+#calculerScore(session)
 
 #print(wikipedia.search("google"))
 #wikipedia.set_lang("fr")

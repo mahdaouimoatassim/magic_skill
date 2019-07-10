@@ -6,7 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import relationship
 from sqlalchemy import or_
 import hashlib
-
+import datetime
+from dateutil import relativedelta
+import numpy as np
 
 utilisateur="postgres"
 mot_de_passe="Data"
@@ -118,10 +120,9 @@ def rechercherEntreprise(session,nom_entreprise):
     else:
         return 'none'
 
-
 # Rechercher l'identifiant de la competence en se basant sur le nom de la competence
 def rechercherCompetence(session,nom_competence):
-    u = session.query(Competences.competence_id).filter(  Competences.nom.like(nom_competence) ).first()
+    u = session.query(Competences.competence_id).filter(  Competences.nom.like(nom_competence)).first()
     if u is not None:
         return u.competence_id
     else:
@@ -162,6 +163,48 @@ def rechercherMaxCollaborateurId(session):
         return u.collaborateur_id
     else:
         return 0
+
+def calculerScore(session):
+    today_date = datetime.date.today()
+    dates = session.query(Experiences.competence_id, func.min(Missions.date_debut)).filter(
+        Experiences.mission_id == Missions.mission_id).group_by(
+        Experiences.competence_id).order_by(Experiences.competence_id).all()
+    u = session.query(Missions, Experiences).filter(Missions.mission_id == Experiences.mission_id)
+    if u is not None:
+        for row in u:
+            min_date = dates[row[1].competence_id - 1][1]
+            delta = relativedelta.relativedelta(today_date, min_date)
+            max_months = delta.years * 12 + delta.months
+            scr = integraleRacineCarre(row[0].date_debut, row[0].duree, max_months, min_date)
+            x = session.query(Experiences).filter(Experiences.mission_id == row[1].mission_id).filter(
+                Experiences.collaborateur_id == row[1].collaborateur_id).filter(
+                Experiences.competence_id == row[1].competence_id).update({Experiences.score: scr})
+            session.commit()
+    else:
+        print("Nothing to print")
+
+
+def integraleLineaire(date_debut, duree, months, min_date):
+    max_linear = months ** 2 / 2
+    min_delta = relativedelta.relativedelta(date_debut, min_date)
+    min_months = min_delta.years*12 + min_delta.months
+    max_months = min_months + duree
+    return (((max_months**2/2) - (min_months**2/2))/max_linear)*10
+
+def integraleExponentielle(date_debut, duree, months, min_date):
+    max_expo = np.exp(months)
+    min_delta = relativedelta.relativedelta(date_debut, min_date)
+    min_months = min_delta.years*12 + min_delta.months
+    max_months = min_months + duree
+    return ((np.exp(max_months) - np.exp(min_months))/max_expo)*10
+
+def integraleRacineCarre(date_debut, duree, months, min_date):
+    max_racine = 1 / 2 * np.sqrt(months)
+    min_delta = relativedelta.relativedelta(date_debut, min_date)
+    min_months = min_delta.years*12 + min_delta.months
+    max_months = min_months + duree
+    return ((1/2*(np.sqrt(max_months) - np.sqrt(min_months)))/max_racine)*10
+
 
 #----------------------------------------------------------------------------------------------------------------
 #-------------------------------- Fonction qui permet de vider la base de données--------------------------------
