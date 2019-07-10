@@ -12,7 +12,7 @@ from SQLAlchemyAPI import *
 from datetime import date
 import sys
 
-folder = "C:/Users/e.mahdaoui/Desktop/Stage Fin d'Etude/Application MagicSkills/CV"
+folder = "C:/Users/e.mahdaoui/Desktop/Projet Magic Skills/CV"
 seniorite_seuil= 60
 secteur_activite=["bancaire","télécommunication", "banque", "assurance" ,"grande distribution", "transport","informatique", "technologie", "pharmacie","pétroliers"]
 
@@ -287,7 +287,7 @@ def insererCompetence(session,content,listeMission,file,dossier):
         else:
             Entreprise_id = rechercherMaxEntrepriseId(session)+1
  #           ent_dict_sect=""
-            chercher_secteur_activite_entreprise(entreprise)
+            ent_dict_sect=chercher_secteur_activite_entreprise(entreprise)
             session.add_all([
                 Entreprises(entreprise_id=Entreprise_id, nom=entreprise, secteur_activite=ent_dict_sect['secteur'], region='',description=ent_dict_sect['definition'])
             ])
