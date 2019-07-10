@@ -157,7 +157,7 @@ def cvMissionDetail(content,ListMission):
     competenceTechnique=''
     actif=False
     for i in range (3,ListMission[0].get('Index_debut')-1):
-        if (('compétence' in content[i].lower())  ):
+        if (('compétence' in content[i].lower())  or ('competence' in content[i].lower()) ):
          #   and ('technique' in content[i].lower())
             actif=True
         if (actif==True):
@@ -183,6 +183,7 @@ def cvMissionDetail(content,ListMission):
 #---------Extraire la liste des competence à partir de la section competence--------------------
 #---------liste des chaine de caractère de competences.-----------------------------------------
 
+
 def cvListeCompetence(Texte):
     #Texte=Texte.lower().replace()
     listetexte=Texte.split('\n')
@@ -191,11 +192,16 @@ def cvListeCompetence(Texte):
         if (',' in line) or ("/" in line) or ("(" in line) or (")" in line)or (":" in line):
             if (":" in line):
                 line=line.split(":")[1]
-            listeMot=my_split(line, [",", "/", " et ", "(", ")",":"])
+            listeMot=my_split(line, [",", " et ", "(", ")",":"])
             for mot in listeMot:
-                if(len(mot) >= 1):
+                if(len(mot.strip()) >= 1):
+#                  print("-------------------------")
+#                    print(mot)
+#                    print(len(mot))
                     if mot[len(mot)-1] == ".":
-                        ListeCompetence.append(mot.strip()[:len(mot.strip())-1])
+                        mot_coupe = mot.strip()[:len(mot.strip())-1]
+                        if (mot_coupe != '') and (mot_coupe != '.'):
+                            ListeCompetence.append(mot_coupe)
                     else:
                         ListeCompetence.append(mot.strip())
     print("--------------------------------------------------------------------------------------")
@@ -318,7 +324,7 @@ def traitement_cv(lien_cv,dossier,session):
 
 #    str(sys.argv[1])
     content = convertWordToText(folder+'/'+lien_cv)
-    #print(content)
+#    print(content)
     missions_detail = cvMissionDetail(content, cvMission(content))
     listecompetence = cvCompetenceMission(cvListeCompetence(missions_detail[0].get('detail')), missions_detail)
     insererCompetence(session, content, listecompetence,lien_cv,dossier)
