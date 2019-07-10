@@ -190,8 +190,11 @@ def cvListeCompetence(Texte):
     ListeCompetence=[]
     for line in listetexte:
         if (',' in line) or ("/" in line) or ("(" in line) or (")" in line)or (":" in line):
+            catégorie=""
             if (":" in line):
-                line=line.split(":")[1]
+                line0= line.split(":")
+                catégorie=line0[0]
+                line=line0[1]
             listeMot=my_split(line, [",", " et ", "(", ")",":"])
             for mot in listeMot:
                 if(len(mot.strip()) >= 1):
@@ -201,11 +204,11 @@ def cvListeCompetence(Texte):
                     if mot[len(mot)-1] == ".":
                         mot_coupe = mot.strip()[:len(mot.strip())-1]
                         if (mot_coupe != '') and (mot_coupe != '.'):
-                            ListeCompetence.append(mot_coupe)
+                            ListeCompetence.append(mot_coupe+"--"+catégorie)
                     else:
-                        ListeCompetence.append(mot.strip())
+                        ListeCompetence.append(mot.strip()+"--"+catégorie)
     print("--------------------------------------------------------------------------------------")
-    print(ListeCompetence)
+  #  print(ListeCompetence)
     return ListeCompetence
 
 #-----------------------------------------------------------------------------------------------
@@ -221,9 +224,12 @@ def cvCompetenceMission(ListeCompetence,ListMissionDetail):
         detail=MissionDetail.get('detail').lower()
         listeMissionCompetence=[]
         if (cpt> 1):
-            for competence in ListeCompetence:
+            for couple in ListeCompetence:
+                ligne=couple.split("--")
+                competence=ligne[0]
+                categorie=ligne[1]
                 if ( competence.lower() in detail):
-                    listeMissionCompetence.append(competence)
+                    listeMissionCompetence.append(couple)
             Mission={}
             Mission['ID']=MissionDetail.get('missionDesc')
             Mission['Competences']=listeMissionCompetence
@@ -300,13 +306,18 @@ def insererCompetence(session,content,listeMission,file,dossier):
                      date_debut=date_debut,
                      date_fin=date_fin,duree=duree_mission)
         ])
-        for competence in mission['Competences']:
+        for couple in mission['Competences']:
+            ligne=couple.split("--")
+            competence=ligne[0]
+            categorie=ligne[1]
+            print("-------------------------------------------")
+            print(couple)
             if rechercherCompetence(session, competence.upper()) != 'none':
                 Competence_id=rechercherCompetence(session, competence.upper())
             else:
                 Competence_id = rechercherMaxCompetenceId(session)+1
                 session.add_all([
-                    Competences(competence_id=Competence_id, nom=competence.upper(), categorie='non renseigne')
+                    Competences(competence_id=Competence_id, nom=competence.upper(), categorie=categorie)
                 ])
                 session.commit()
             session.add_all([
@@ -324,7 +335,7 @@ def traitement_cv(lien_cv,dossier,session):
 
 #    str(sys.argv[1])
     content = convertWordToText(folder+'/'+lien_cv)
-    print(content)
+ #   print(content)
     missions_detail = cvMissionDetail(content, cvMission(content))
     listecompetence = cvCompetenceMission(cvListeCompetence(missions_detail[0].get('detail')), missions_detail)
     insererCompetence(session, content, listecompetence,lien_cv,dossier)
@@ -344,7 +355,7 @@ def lister_fichier_word(lien):
 def extraction_competence_process(dossier):
     cpt=0
     for fichier in lister_fichier_word(dossier):
-        print(fichier)
+       # print(fichier)
         traitement_cv(fichier, dossier,  session)
     return True
 
