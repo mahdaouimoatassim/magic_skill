@@ -286,10 +286,10 @@ def insererCompetence(session,content,listeMission,file,dossier):
             Entreprise_id=rechercherEntreprise(session, entreprise) #recuperer l'ide de l'ntreprise si elle existe
         else:
             Entreprise_id = rechercherMaxEntrepriseId(session)+1
-            ent_dict_sect=""
-                #chercher_secteur_activite_entreprise(entreprise) 'secteur' ['definition']
+ #           ent_dict_sect=""
+            chercher_secteur_activite_entreprise(entreprise)
             session.add_all([
-                Entreprises(entreprise_id=Entreprise_id, nom=entreprise, secteur_activite=ent_dict_sect, region='',description=ent_dict_sect)
+                Entreprises(entreprise_id=Entreprise_id, nom=entreprise, secteur_activite=ent_dict_sect['secteur'], region='',description=ent_dict_sect['definition'])
             ])
             session.commit()        #inserer l'entreprise si elle existe pas
 
@@ -324,7 +324,7 @@ def traitement_cv(lien_cv,dossier,session):
 
 #    str(sys.argv[1])
     content = convertWordToText(folder+'/'+lien_cv)
-#    print(content)
+    print(content)
     missions_detail = cvMissionDetail(content, cvMission(content))
     listecompetence = cvCompetenceMission(cvListeCompetence(missions_detail[0].get('detail')), missions_detail)
     insererCompetence(session, content, listecompetence,lien_cv,dossier)
