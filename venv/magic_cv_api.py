@@ -198,9 +198,6 @@ def cvListeCompetence(Texte):
             listeMot=my_split(line, [",", " et ", "(", ")",":"])
             for mot in listeMot:
                 if(len(mot.strip()) >= 1):
-#                  print("-------------------------")
-#                    print(mot)
-#                    print(len(mot))
                     if mot[len(mot)-1] == ".":
                         mot_coupe = mot.strip()[:len(mot.strip())-1]
                         if (mot_coupe != '') and (mot_coupe != '.'):
@@ -208,7 +205,7 @@ def cvListeCompetence(Texte):
                     else:
                         ListeCompetence.append(mot.strip()+"--"+catégorie)
     print("--------------------------------------------------------------------------------------")
-  #  print(ListeCompetence)
+    print(ListeCompetence)
     return ListeCompetence
 
 #-----------------------------------------------------------------------------------------------
@@ -310,8 +307,8 @@ def insererCompetence(session,content,listeMission,file,dossier):
             ligne=couple.split("--")
             competence=ligne[0]
             categorie=ligne[1]
-            print("-------------------------------------------")
-            print(couple)
+ #           print("-------------------------------------------")
+ #           print(couple)
             if rechercherCompetence(session, competence.upper()) != 'none':
                 Competence_id=rechercherCompetence(session, competence.upper())
             else:

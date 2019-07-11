@@ -175,11 +175,11 @@ def calculerScore(session):
             min_date = dates[row[1].competence_id - 1][1]
             delta = relativedelta.relativedelta(today_date, min_date)
             max_months = delta.years * 12 + delta.months
-            scr = integraleRacineCarre(row[0].date_debut, row[0].duree, max_months, min_date)
-            x = session.query(Experiences).filter(Experiences.mission_id == row[1].mission_id).filter(
-                Experiences.collaborateur_id == row[1].collaborateur_id).filter(
-                Experiences.competence_id == row[1].competence_id).update({Experiences.score: scr})
-            session.commit()
+            row[1].score = integraleRacineCarre(row[0].date_debut, row[0].duree, max_months, min_date)
+            #x = session.query(Experiences).filter(Experiences.mission_id == row[1].mission_id).filter(
+            #    Experiences.collaborateur_id == row[1].collaborateur_id).filter(
+            #    Experiences.competence_id == row[1].competence_id).update({Experiences.score: scr})
+        session.commit()
     else:
         print("Nothing to print")
 
