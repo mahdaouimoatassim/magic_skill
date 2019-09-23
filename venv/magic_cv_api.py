@@ -30,7 +30,7 @@ def convertWordToText(Lien):
     return content
 
 #----------------------------------------------------------------------------------------------
-#------  Rcuperer la date de dernière modification du fichier----------------------------------
+#--------Rcuperer la date de dernière modification du fichier----------------------------------
 
 def date_derniere_modification_fichier(lien):
     return datetime.datetime.strptime(time.ctime(os.path.getmtime(lien)), "%a %b %d %H:%M:%S %Y")
@@ -53,8 +53,8 @@ def dureeMission(time):
                 mois = t[count-1]
             count = count + 1
         resultat =(float(an)*12 + float(mois))
-    except ValueError:
-        return -1
+    except ValueError-1:
+        return
     except:
         return -1
     return resultat
